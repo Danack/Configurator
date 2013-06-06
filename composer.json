@@ -1,0 +1,20 @@
+{
+	"name": "intahwebz/configurator",
+	"description": "Generates config files from PHP based templates and PHP style config files..",
+	"keywords": ["php", "config", "tool", "UTF-8"],
+	"license": "MIT",
+
+	"autoload": {
+		"psr-0": {
+			"Intahwebz\\Configurator": "src/"
+		}
+	},
+
+	"authors": [
+		{
+			"name": "Dan Ackroyd",
+			"email": "Danack@basereality.com",
+			"homepage": "http://www.basereality.com"
+		}
+	]
+}

@@ -49,7 +49,7 @@ class Configurator {
 	}
 
 	/**
-	 * Reads aconfig file applies the current config settings to it and returns
+	 * Reads a config file applies the current config settings to it and returns
 	 * the generated result.
 	 *
 	 * @param $inputFilename

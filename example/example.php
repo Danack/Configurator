@@ -23,19 +23,24 @@ $knownEnvironments = array(
     'macports',
 );
 
-if ($argc >= 2){
+if ($argc >= 2) {
     $environmentRequired = $argv[1];
     if (in_array($environmentRequired, $knownEnvironments) == true){
         $environment = $environmentRequired;
     }
     else {
-        echo "Unknown environment, please run with ". implode(', ', $knownEnvironments);
+        printf(
+            "Unknown environment, please choose one of %s\n",
+            implode(', ', $knownEnvironments)
+        );
         exit(-1);
     }
 }
-else{
-    echo "Defaulting to [".$environment."] environment";
-    echo "Environment not set, please run with ". implode(', ', $knownEnvironments);
+else {
+    printf(
+        "Environment not set, please run as %s\n",
+        implode(', ', $knownEnvironments)
+    );
     exit(-1);
 }
 

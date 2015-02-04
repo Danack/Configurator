@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+use Configurator\CliRunner;
+
+require_once(__DIR__.'/../vendor/autoload.php');
+
+$runner = new CliRunner(CliRunner::FPMCONV);
+$runner->execute();

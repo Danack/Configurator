@@ -107,5 +107,3 @@ interactive-timeout
 END;
 
 return $config;
-
-?>

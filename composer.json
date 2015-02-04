@@ -1,20 +1,32 @@
 {
-	"name": "intahwebz/configurator",
-	"description": "Generates config files from PHP based templates and PHP style config files..",
-	"keywords": ["php", "config", "tool", "UTF-8"],
-	"license": "MIT",
-
-	"autoload": {
-		"psr-0": {
-			"Intahwebz\\Configurator": "src/"
-		}
-	},
-
-	"authors": [
-		{
-			"name": "Dan Ackroyd",
-			"email": "Danack@basereality.com",
-			"homepage": "http://www.basereality.com"
-		}
-	]
+    "name": "intahwebz/configurator",
+    "description": "Generates config files from PHP based config files and PHP and JSON data files.",
+    "keywords": ["php", "config", "tool", "UTF-8"],
+    "license": "MIT",
+    "autoload": {
+        "psr-0": {
+            "Configurator": "src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Danack/Auryn"
+        }
+    ],
+    "require": {
+        "danack/auryn": "^0.14.0",
+        "danack/console": "^2.6.1",
+        "phpunit/phpunit": "4.4.5",
+        "mikey179/vfsStream": "^1.4.0"
+    },
+    "authors": [
+        {
+            "name": "Dan Ackroyd",
+            "email": "Danack@basereality.com",
+            "homepage": "http://www.basereality.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

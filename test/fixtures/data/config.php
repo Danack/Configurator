@@ -6,9 +6,8 @@
 $default = array(
     'mysql.charset'   => 'utf8mb4',
     'mysql.collation' => 'utf8mb4_unicode_ci',
+    'php.memory.limit' => '16M'
 );
-
-
 
 $amazonec2 = array(
     'nginx.log.directory'  => '/var/log/nginx',
@@ -102,3 +101,4 @@ $macports = array(
    'mysql.log.directory'    => '/opt/local/var/log/mysql55',
     'mysql.run.dir'         => '/opt/local/var/run/mysql55',
 );
+

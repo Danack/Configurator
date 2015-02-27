@@ -18,11 +18,13 @@
         "bin/configurate",
         "bin/fpmconv"
     ],
-    "require": {
-        "danack/auryn": "^0.14.0",
-        "danack/console": "^2.6.1",
+    "require-dev": {
         "phpunit/phpunit": "4.4.5",
         "mikey179/vfsStream": "^1.4.0"
+    },
+    "require": {
+        "danack/auryn": "^0.14.0",
+        "danack/console": "^2.6.1"
     },
     "authors": [
         {

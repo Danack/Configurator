@@ -38,7 +38,8 @@ class ConvertTest extends BaseTestCase {
         chdir(__DIR__.'/../../../');
 
         exec("php ./bin/".$command, $output, $returnValue);
-        $this->assertEquals(0, $returnValue, "Conversion returned non zero value.");
+        $outputString = implode("\n", $output);
+        $this->assertEquals(0, $returnValue, "Conversion returned non zero value, output was: ".$outputString);
     }
 
     

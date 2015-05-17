@@ -8,12 +8,6 @@
             "Configurator": "src/"
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Danack/Auryn"
-        }
-    ],
     "bin": [
         "bin/configurate",
         "bin/fpmconv"
@@ -23,7 +17,7 @@
         "mikey179/vfsStream": "^1.4.0"
     },
     "require": {
-        "danack/auryn": "^0.14.0",
+        "rdlowrey/auryn": "^0.15.2",
         "danack/console": "^2.6.1"
     },
     "authors": [

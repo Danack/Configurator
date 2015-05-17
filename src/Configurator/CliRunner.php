@@ -7,7 +7,7 @@ use Danack\Console\Formatter\OutputFormatterStyle;
 use Danack\Console\Helper\QuestionHelper;
 use Danack\Console\Command\Command;
 use Danack\Console\Input\InputArgument;
-use Auryn\Provider;
+use Auryn\Injector;
 
 
 
@@ -181,10 +181,10 @@ function convertToFPM($inputFilename, $outputFilename) {
 }
 
 /**
- * @return Provider
+ * @return Injector
  */
 function createInjector() {
-    $injector = new Provider();
+    $injector = new Injector();
 
     return $injector;
 }

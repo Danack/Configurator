@@ -94,9 +94,9 @@ class Configurator {
     /**
      * @param $data
      */
-    private function addConfig($data) {
-        $this->config = array_merge($this->config, $data);
-    }
+//    private function addConfig($data) {
+//        $this->config = array_merge($this->config, $data);
+//    }
 
     private function addConfigDefault($data) {
         $this->configDefault = array_merge($this->configDefault, $data);
@@ -122,10 +122,13 @@ class Configurator {
         require($filename);
         $contents = ob_get_contents();
         ob_end_clean();
+
         
         if (strlen($contents) != 0) {
             echo "Filename `".$filename."` output some characters. Please check it is a valid PHP file.\n";
         }
+        
+        //var_dump($default);
 
         if (isset($default) == true) {
             $this->addConfigDefault($default);
@@ -174,10 +177,12 @@ class Configurator {
      * @return mixed
      */
     public function configurate($inputFilename) {
-        $config = $this->config;
-        $config = array_merge($config, $this->configDefault);
-        $config = array_merge($config, $this->configEnvironment);
-        $config = array_merge($config, $this->configOverride);
+//        $config = $this->config;
+//        $config = array_merge($config, $this->configDefault);
+//        $config = array_merge($config, $this->configEnvironment);
+//        $config = array_merge($config, $this->configOverride);
+        
+        $config = $this->getConfig();
         
         foreach($config as $key => $value) {
             $$key = $value;
@@ -186,6 +191,16 @@ class Configurator {
         $configuration = require $inputFilename;
         
         return $configuration;
+    }
+    
+    public function getConfig()
+    {
+        $config = $this->config;
+        $config = array_merge($config, $this->configDefault);
+        $config = array_merge($config, $this->configEnvironment);
+        $config = array_merge($config, $this->configOverride);
+        
+        return $config;
     }
 }
 

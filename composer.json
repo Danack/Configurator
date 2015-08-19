@@ -17,7 +17,7 @@
         "mikey179/vfsStream": "^1.4.0"
     },
     "require": {
-        "rdlowrey/auryn": "^0.15.2",
+        "rdlowrey/auryn": "^1.0.2",
         "danack/console": "^2.6.1"
     },
     "authors": [

@@ -25,7 +25,6 @@ class Configurator {
      */
     private $environment;
 
-   
     public function run($input,
             $output,
             $environment,
@@ -91,13 +90,6 @@ class Configurator {
         }
     }
 
-    /**
-     * @param $data
-     */
-//    private function addConfig($data) {
-//        $this->config = array_merge($this->config, $data);
-//    }
-
     private function addConfigDefault($data) {
         $this->configDefault = array_merge($this->configDefault, $data);
     }
@@ -109,7 +101,6 @@ class Configurator {
     private function addConfigOverride($data) {
         $this->configOverride = array_merge($this->configOverride, $data);
     }
-
 
     /**
      * Adds an ini file to the configurator. All of the options are then available for
@@ -123,12 +114,15 @@ class Configurator {
         $contents = ob_get_contents();
         ob_end_clean();
 
-        
         if (strlen($contents) != 0) {
-            echo "Filename `".$filename."` output some characters. Please check it is a valid PHP file.\n";
+            
+            $message = sprintf(
+                "Filename `%s` output some characters. Please check it is a valid PHP file.\n",
+                $filename
+            );
+
+            throw new ConfiguratorException($message);
         }
-        
-        //var_dump($default);
 
         if (isset($default) == true) {
             $this->addConfigDefault($default);
@@ -140,6 +134,11 @@ class Configurator {
 
         if (isset($override) == true) {
             $this->addConfigOverride($override);
+        }
+
+        if (isset($evaluate) == true) {
+            $calculatedValues = $evaluate($this->getConfig());
+            $this->addConfigOverride($calculatedValues);
         }
     }
     
@@ -154,7 +153,7 @@ class Configurator {
      */
     public function addConstant($constantName) {
         if (defined($constantName) == false) {
-            throw new \Exception("Constant [$constantName] is not available, cannot configurate.");
+            throw new \ConfiguratorException("Constant [$constantName] is not available, cannot configurate.");
         }
 
         $this->config[$constantName] = constant($constantName);
@@ -176,12 +175,7 @@ class Configurator {
      * @param $inputFilename
      * @return mixed
      */
-    public function configurate($inputFilename) {
-//        $config = $this->config;
-//        $config = array_merge($config, $this->configDefault);
-//        $config = array_merge($config, $this->configEnvironment);
-//        $config = array_merge($config, $this->configOverride);
-        
+    public function configurate($inputFilename) {        
         $config = $this->getConfig();
         
         foreach($config as $key => $value) {

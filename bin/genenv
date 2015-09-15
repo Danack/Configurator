@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+use Configurator\CliRunner;
+
+$autoLocations = array(
+    __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/vendor/autoload.php'
+);
+
+foreach ($autoLocations as $file) {
+    if (file_exists($file)) {
+        define('COMPOSER_AUTOLOAD_LOCATION', $file);
+        break;
+    }
+}
+
+if (!defined('COMPOSER_AUTOLOAD_LOCATION')) {
+    fwrite(STDERR, 'Failed to find composer autoloader file.'.PHP_EOL);
+    exit(1);
+}
+
+require_once(COMPOSER_AUTOLOAD_LOCATION);
+
+$runner = new CliRunner(CliRunner::GENENV);
+$runner->execute();

@@ -9,10 +9,9 @@ use Danack\Console\Command\Command;
 use Danack\Console\Input\InputArgument;
 use Auryn\Injector;
 
-
-
-class CliRunner {
-
+class CliRunner
+{
+    const GENENV = 'genenv';
     const FPMCONV = 'fpmconv';
     const CONFIGURATE = 'configurate';
     
@@ -29,6 +28,9 @@ class CliRunner {
         }
         else if ($defaultCommand == CliRunner::CONFIGURATE) {
             $command = $this->makeConfigurateCommand();
+        }
+        else if ($defaultCommand == CliRunner::GENENV) {
+            $command = $this->makeGenerateEnvCommand();
         }
         else {
             throw new \Exception("Unknown command type");
@@ -66,7 +68,7 @@ class CliRunner {
     function makeConfigurateCommand() {
         $configurateCommand = new Command(
             self::CONFIGURATE,
-            ['Configurator\Configurator', 'run']
+            ['Configurator\Configurator', 'writeConfigFile']
         );
         $configurateCommand->setDescription("Transform a config file into an output file");
 
@@ -79,7 +81,52 @@ class CliRunner {
         $configurateCommand->addArgument(
             'output',
             InputArgument::REQUIRED,
+            'The output filename'
+        );
+
+        $configurateCommand->addArgument(
+            'environment',
+            InputArgument::REQUIRED,
+            'What environment to generated the config for.'
+        );
+
+        $configurateCommand->addOption(
+            'phpsettings',
+            'p',
+            InputArgument::OPTIONAL,
+            'A comma separated list of PHP setting files.'
+        );
+
+        $configurateCommand->addOption(
+            'jssettings',
+            'j',
+            InputArgument::OPTIONAL,
+            'A comma separated list of JSON setting files.'
+        );
+        
+        return $configurateCommand;
+    }
+    
+    
+    
+    function makeGenerateEnvCommand() {
+        $configurateCommand = new Command(
+            self::GENENV,
+            ['Configurator\Configurator', 'writeEnvironmentFile']
+        );
+
+        $configurateCommand->setDescription("Generate a list of env settings into a PHP file");
+
+        $configurateCommand->addArgument(
+            'input',
+            InputArgument::REQUIRED,
             'The input filename'
+        );
+
+        $configurateCommand->addArgument(
+            'output',
+            InputArgument::REQUIRED,
+            'The output filename'
         );
 
         $configurateCommand->addArgument(
@@ -131,11 +178,15 @@ class CliRunner {
         
             $questionHelper = new QuestionHelper();
             $questionHelper->setHelperSet($this->console->getHelperSet());
-            $input = $parsedCommand->getInput();
+            //$input = $parsedCommand->getInput();
         
             $injector = createInjector();
-            $params = formatKeyNames($parsedCommand->getParams());
-            $injector->execute($parsedCommand->getCallable(), $params);
+
+            foreach ($parsedCommand->getParams() as $key => $value) {
+                $injector->defineParam($key, $value);
+            }
+            
+            $injector->execute($parsedCommand->getCallable());
         }
         catch (ConfiguratorException $sce) {
             echo "Error running task: \n";

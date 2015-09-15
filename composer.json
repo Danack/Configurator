@@ -10,6 +10,7 @@
     },
     "bin": [
         "bin/configurate",
+        "bin/genenv",
         "bin/fpmconv"
     ],
     "require-dev": {

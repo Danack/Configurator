@@ -3,8 +3,8 @@
 namespace Configurator;
 
 
-class Configurator {
-
+class Configurator
+{
     private $config = array();
     private $configDefault = array();
     private $configEnvironment = array();
@@ -23,36 +23,46 @@ class Configurator {
     /**
      * @var
      */
-    private $environment;
-
-    public function run($input,
-            $output,
-            $environment,
-            $jssettings = [],
-            $phpsettings = []) {
-        
+    private $environmentList;
+    
+    private $jssettings;
+    
+    private $phpsettings;
+    
+    public function __construct(
+        $input,
+        $output,
+        $environment,
+        $jssettings = [],
+        $phpsettings = []
+    ) {
         if (count($jssettings) == 0 && count($phpsettings) == 0) {
             throw new ConfiguratorException("One of PHP setting or JS settings must be set.");
         }
         
-        $this->environment = $environment;
         $this->inputFilename = $input;
         $this->outputFilename = $output;
+        $this->environmentList = explode(',', $environment);
+        $this->jssettings = $jssettings;
+        $this->phpsettings = $phpsettings;
 
-        if ($phpsettings !== null) {
-            $phpsettings = explode(',', $phpsettings);
+        if ($this->phpsettings !== null) {
+            $phpsettings = explode(',', $this->phpsettings);
             foreach ($phpsettings as $phpSetting) {
-                $this->addPHPConfig($environment, $phpSetting);
+                $this->addPHPConfig($phpSetting);
             }
         }
 
-        if ($jssettings !== null) {
-            $jssettings = explode(',', $jssettings);
+        if ($this->jssettings !== null) {
+            $jssettings = explode(',', $this->jssettings);
             foreach ($jssettings as $jsSetting) {
-                $this->addJSConfig($environment, $jsSetting);
+                $this->addJSConfig($jsSetting);
             }
         }
+    }
 
+    public function writeConfigFile()
+    {
         $config = $this->configurate($this->inputFilename);
         $written = @file_put_contents($this->outputFilename, $config);
         if (!$written) {
@@ -60,12 +70,23 @@ class Configurator {
         }
     }
 
+    
+    public function writeEnvironmentFile()
+    {
+        $output = $this->genEnvironmentFile();
+        $written = @file_put_contents($this->outputFilename, $output);
+        if (!$written) {
+            throw new \Exception("Failed to write config to file `$this->outputFilename`");
+        }
+    }
+    
 
     /**
      * @param $environment
      * @param $filename
      */
-    function addJSConfig($environment, $filename) {
+    function addJSConfig($filename)
+    {
         $contents = @file_get_contents($filename);
         if ($contents == false) {
             throw new ConfiguratorException("Could not read file $filename.");
@@ -81,8 +102,10 @@ class Configurator {
             $this->addConfigDefault($data['default']);
         }
         
-        if (array_key_exists($environment, $data) == true) {
-            $this->addConfigEnvironment($data[$environment]);
+        foreach ($this->environmentList as $environment) {
+            if (array_key_exists($environment, $data) == true) {
+                $this->addConfigEnvironment($data[$environment]);
+            }
         }
 
         if (array_key_exists('override', $data) == true) {
@@ -108,14 +131,14 @@ class Configurator {
      * @param $environment
      * @param $filename
      */
-    public function addPHPConfig($environment, $filename) {
+    public function addPHPConfig($filename)
+    {
         ob_start();
         require($filename);
         $contents = ob_get_contents();
         ob_end_clean();
 
         if (strlen($contents) != 0) {
-            
             $message = sprintf(
                 "Filename `%s` output some characters. Please check it is a valid PHP file.\n",
                 $filename
@@ -128,8 +151,10 @@ class Configurator {
             $this->addConfigDefault($default);
         }
 
-        if (isset($$environment) == true) {
-            $this->addConfigEnvironment($$environment);
+        foreach ($this->environmentList as $environment) {
+            if (isset($$environment) == true) {
+                $this->addConfigEnvironment($$environment);
+            }
         }
 
         if (isset($override) == true) {
@@ -187,6 +212,42 @@ class Configurator {
         return $configuration;
     }
     
+    
+    public function genEnvironmentFile()
+    { 
+        $config = $this->getConfig();
+        
+        $envRequired = require $this->inputFilename;
+        
+        if (is_array($envRequired) == false) {
+            throw new ConfiguratorException("Failed to get array from ".$this->inputFilename);
+        }
+        
+        $envOutput = "<?php\n";
+        $envOutput .= "\n";
+        
+        $envOutput .= "function getAppEnv() {\n";
+        $envOutput .= "    static \$env = [\n"; 
+        
+        foreach ($envRequired as $env) {
+            if (array_key_exists($env, $config) == false) {
+                throw new ConfiguratorException("App needs $env but not found in config");
+            }
+
+            $envOutput .= sprintf(
+                "        '%s' => '%s',\n",
+                $env,
+                $config[$env]
+            );
+        }
+        $envOutput .= "    ];\n";
+        $envOutput .= "\n";
+        $envOutput .= "    return \$env;\n";
+        $envOutput .= "}\n";
+
+        return $envOutput;
+    }
+
     public function getConfig()
     {
         $config = $this->config;

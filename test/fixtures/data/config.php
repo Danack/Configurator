@@ -1,104 +1,118 @@
 <?php
 
+use Configurator\ConfiguratorException;
+
 // This is a sample configuration file
 
 //global variables go here.
 $default = array(
-    'mysql.charset'   => 'utf8mb4',
-    'mysql.collation' => 'utf8mb4_unicode_ci',
-    'php.memory.limit' => '16M'
+    'app_name' => 'test',
+    'mysql_charset'   => 'utf8mb4',
+    'mysql_collation' => 'utf8mb4_unicode_ci',
+    'php_memory_limit' => '16M',
+    'cache_setting' => 'cache_time',
 );
 
 $amazonec2 = array(
-    'nginx.log.directory'  => '/var/log/nginx',
-    'nginx.root.directory' => '/usr/share/nginx',
-    'nginx.conf.directory' => '/etc/nginx',
-    'nginx.run.directory ' => '/var/run',
-    'nginx.user'           => 'nginx',
+    'nginx_log_directory'  => '/var/log/nginx',
+    'nginx_root_directory' => '/usr/share/nginx',
+    'nginx_conf_directory' => '/etc/nginx',
+    'nginx_run_directory ' => '/var/run',
+    'nginx_user'           => 'nginx',
     
-    'sitename.chroot.directory' => '/home/intahwebz/current',
-    'sitename.root.directory'   => '/home/intahwebz/current',
-    'sitename.cache.directory'  => '/home/intahwebz/current/var/cache',
+    'sitename_chroot_directory' => '/home/intahwebz/current',
+    'sitename_root_directory'   => '/home/intahwebz/current',
+    'sitename_cache_directory'  => '/home/intahwebz/current/var/cache',
     
-    'phpfpm.socket'             => '/var/run/php-fpm',
-    'phpfpm.www.maxmemory'      => '16M',
-    'phpfpm.images.maxmemory'   => '48M',
-    'phpfpm.user'               => 'intahwebz',
-    'phpfpm.group'              => 'www-data',
-    'phpfpm.socket.directory'   => '/var/run/php-fpm',
-    'phpfpm.conf.directory'     => '/etc/php-fpm.d',
-    'phpfpm.pid.directory'      => '/var/run/php-fpm',
+    'phpfpm_socket'             => '/var/run/php-fpm',
+    'phpfpm_www_maxmemory'      => '16M',
+    'phpfpm_images_maxmemory'   => '48M',
+    'phpfpm_user'               => 'intahwebz',
+    'phpfpm_group'              => 'www-data',
+    'phpfpm_socket_directory'   => '/var/run/php-fpm',
+    'phpfpm_conf_directory'     => '/etc/php-fpm.d',
+    'phpfpm_pid_directory'      => '/var/run/php-fpm',
     
-    'php.log.directory'      => '/var/log/php-fpm',
-    'php.errorlog.directory' => '/var/log/php-fpm',
-    'php.session.directory'  => '/var/lib/php/session',
+    'php_log_directory'      => '/var/log/php-fpm',
+    'php_errorlog_directory' => '/var/log/php-fpm',
+    'php_session_directory'  => '/var/lib/php/session',
     
-    'mysql.casetablenames'   => '0',
-    'mysql.datadir'          => '/var/lib/mysql/',
-    'mysql.socket'           => '/var/lib/mysql/mysql.sock',
-    'mysql.log.directory'    => '/var/log',
+    'mysql_casetablenames'   => '0',
+    'mysql_datadir'          => '/var/lib/mysql/',
+    'mysql_socket'           => '/var/lib/mysql/mysql.sock',
+    'mysql_log_directory'    => '/var/log',
 );
 
 $vagrant = array(
-    'nginx.log.directory'  => '/var/log/nginx',
-    'nginx.root.directory' => '/usr/share/nginx',
-    'nginx.conf.directory' => '/etc/nginx',
-    'nginx.run.directory ' => '/var/run',
-    'nginx.user'           => 'www-data',
+    'nginx_log_directory'  => '/var/log/nginx',
+    'nginx_root_directory' => '/usr/share/nginx',
+    'nginx_conf_directory' => '/etc/nginx',
+    'nginx_run_directory ' => '/var/run',
+    'nginx_user'           => 'www-data',
     
-    'sitename.chroot.directory' => '/home/intahwebz/current',
-    'sitename.root.directory'   => '/home/intahwebz/intahwebz/',
-    'sitename.cache.directory'  => '/home/intahwebz/intahwebz/var/cache',
+    'sitename_chroot_directory' => '/home/intahwebz/current',
+    'sitename_root_directory'   => '/home/intahwebz/intahwebz/',
+    'sitename_cache_directory'  => '/home/intahwebz/intahwebz/var/cache',
     
-    'phpfpm.socket'             => '/var/run/php-fpm',
-    'phpfpm.www.maxmemory'      => '16M',
-    'phpfpm.images.maxmemory'   => '48M',
-    'phpfpm.user'               => 'intahwebz',
-    'phpfpm.group'              => 'www-data',
-    'phpfpm.socket.directory'   => '/var/run/php-fpm',
-    'phpfpm.conf.directory'     => '/etc/php/php-fpm.d',
-    'phpfpm.pid.directory'      => '/var/run/php-fpm',
+    'phpfpm_socket'             => '/var/run/php-fpm',
+    'phpfpm_www_maxmemory'      => '16M',
+    'phpfpm_images_maxmemory'   => '48M',
+    'phpfpm_user'               => 'intahwebz',
+    'phpfpm_group'              => 'www-data',
+    'phpfpm_socket_directory'   => '/var/run/php-fpm',
+    'phpfpm_conf_directory'     => '/etc/php/php-fpm.d',
+    'phpfpm_pid_directory'      => '/var/run/php-fpm',
     
-    'php.conf.directory' => '/etc/php',
-    'php.log.directory' => '/var/log/php',
-    'php.errorlog.directory' => '/var/log/php',
-    'php.session.directory' => '/var/lib/php/session',
+    'php_conf_directory' => '/etc/php',
+    'php_log_directory' => '/var/log/php',
+    'php_errorlog_directory' => '/var/log/php',
+    'php_session_directory' => '/var/lib/php/session',
     
-    'mysql.casetablenames'  => '0',
-    'mysql.datadir'         => '/var/lib/mysql',
-    'mysql.socket'          => '/var/run/mysqld/mysqld.sock',
-    'mysql.log.directory'   => '/var/log',
+    'mysql_casetablenames'  => '0',
+    'mysql_datadir'         => '/var/lib/mysql',
+    'mysql_socket'          => '/var/run/mysqld/mysqld.sock',
+    'mysql_log_directory'   => '/var/log',
 );
 
 $macports = array(
-    'nginx.log.directory'  => '/opt/local/var/log/nginx',
-    'nginx.root.directory' => '/opt/local/share/nginx',
-    'nginx.conf.directory' => '/opt/local/etc/nginx',
-    'nginx.run.directory'  => '/opt/local/var/run',
-    'nginx.user'           => '_www',
+    'nginx_log_directory'  => '/opt/local/var/log/nginx',
+    'nginx_root_directory' => '/opt/local/share/nginx',
+    'nginx_conf_directory' => '/opt/local/etc/nginx',
+    'nginx_run_directory'  => '/opt/local/var/run',
+    'nginx_user'           => '_www',
     
-    'sitename.chroot.directory' => '/documents/projects/intahwebz/intahwebz',
-    'sitename.root.directory'   => '/documents/projects/intahwebz/intahwebz',
-    'sitename.cache.directory'  => '/documents/projects/intahwebz/intahwebz/var/cache',
+    'sitename_chroot_directory' => '/documents/projects/intahwebz/intahwebz',
+    'sitename_root_directory'   => '/documents/projects/intahwebz/intahwebz',
+    'sitename_cache_directory'  => '/documents/projects/intahwebz/intahwebz/var/cache',
     
-    'phpfpm.socket'           => '/opt/local/var/run/php54',
-    'phpfpm.www.maxmemory'    => '16M',
-    'phpfpm.images.maxmemory' => '48M',
-    'phpfpm.user'             => '_www',
-    'phpfpm.group'            => '_www',
-    'phpfpm.pid.directory'    => '/opt/local/var/run/php54',
-    'phpfpm.conf.directory'   => '/opt/local/etc/php54/sites-enabled',
+    'phpfpm_socket'           => '/opt/local/var/run/php54',
+    'phpfpm_www_maxmemory'    => '16M',
+    'phpfpm_images_maxmemory' => '48M',
+    'phpfpm_user'             => '_www',
+    'phpfpm_group'            => '_www',
+    'phpfpm_pid_directory'    => '/opt/local/var/run/php54',
+    'phpfpm_conf_directory'   => '/opt/local/etc/php54/sites-enabled',
 
-    'php.conf.directory'      => '/opt/local/etc/php54',
-    'phpfpm.socket.directory' => '/opt/local/var/run/php54',
-    'php.log.directory'       => '/opt/local/var/log/php54',
-    'php.errorlog.directory'  => '/opt/local/var/log/php54',
-    'php.session.directory'   => '',
+    'php_conf_directory'      => '/opt/local/etc/php54',
+    'phpfpm_socket_directory' => '/opt/local/var/run/php54',
+    'php_log_directory'       => '/opt/local/var/log/php54',
+    'php_errorlog_directory'  => '/opt/local/var/log/php54',
+    'php_session_directory'   => '',
     
-    'mysql.socket'          => '/documents/projects/intahwebz/intahwebz/var/mysql/mysql.sock',
-    'mysql.casetablenames'  => '2',
-    'mysql.datadir'         => '/opt/local/var/db/mysql55/',
-   'mysql.log.directory'    => '/opt/local/var/log/mysql55',
-    'mysql.run.dir'         => '/opt/local/var/run/mysql55',
+    'mysql_socket'          => '/documents/projects/intahwebz/intahwebz/var/mysql/mysql.sock',
+    'mysql_casetablenames'  => '2',
+    'mysql_datadir'         => '/opt/local/var/db/mysql55/',
+    'mysql_log_directory'   => '/opt/local/var/log/mysql55',
+    'mysql_run_dir'         => '/opt/local/var/run/mysql55',
 );
 
+
+$evaluate = function ($config, $environment) {
+    if (array_key_exists('app_name', $config) == false) {
+        throw new ConfiguratorException("app.name isn't set for environment '$environment'.");
+    }
+
+    return [
+        'app_name_uppercase' => strtoupper($config['app_name'])
+    ]; 
+};

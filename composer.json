@@ -1,12 +1,15 @@
 {
     "name": "intahwebz/configurator",
     "description": "Generates config files from PHP based config files and PHP and JSON data files.",
-    "keywords": ["php", "config", "tool", "UTF-8"],
+    "keywords": ["php", "config", "environment", "configuration", "tool", "UTF-8"],
     "license": "MIT",
     "autoload": {
         "psr-0": {
             "Configurator": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-0": { "ExampleApp\\": "example/" }
     },
     "bin": [
         "bin/configurate",
@@ -27,7 +30,5 @@
             "email": "Danack@basereality.com",
             "homepage": "http://www.basereality.com"
         }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    ]
 }

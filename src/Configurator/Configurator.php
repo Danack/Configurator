@@ -20,61 +20,63 @@ class Configurator
      */
     private $outputFilename;
 
+    private $environment;
+    
     /**
      * @var
      */
     private $environmentList;
-    
-    private $jssettings;
-    
-    private $phpsettings;
-    
+
     public function __construct(
-        $input,
-        $output,
         $environment,
-        $jssettings = [],
-        $phpsettings = []
+        $jssettings = '',
+        $phpsettings = ''
     ) {
         if (count($jssettings) == 0 && count($phpsettings) == 0) {
             throw new ConfiguratorException("One of PHP setting or JS settings must be set.");
         }
         
-        $this->inputFilename = $input;
-        $this->outputFilename = $output;
+        $this->environment = $environment;
         $this->environmentList = explode(',', $environment);
-        $this->jssettings = $jssettings;
-        $this->phpsettings = $phpsettings;
 
-        if ($this->phpsettings !== null) {
-            $phpsettings = explode(',', $this->phpsettings);
-            foreach ($phpsettings as $phpSetting) {
+        $phpsettings = trim($phpsettings);
+        if (strlen($phpsettings) > 0) {
+            $phpsettingArray = explode(',', $phpsettings);
+            foreach ($phpsettingArray as $phpSetting) {
                 $this->addPHPConfig($phpSetting);
             }
         }
 
-        if ($this->jssettings !== null) {
-            $jssettings = explode(',', $this->jssettings);
-            foreach ($jssettings as $jsSetting) {
+        $jssettings = trim($jssettings);
+        if (strlen($jssettings) > 0) {
+            $jsSettingsArray = explode(',', $jssettings);
+            foreach ($jsSettingsArray as $jsSetting) {
                 $this->addJSConfig($jsSetting);
             }
         }
+
     }
 
-    public function writeConfigFile()
+    public function writeConfigFile($input, $output)
     {
-        $config = $this->configurate($this->inputFilename);
-        $written = @file_put_contents($this->outputFilename, $config);
+        $outputFilename = $output;
+        $inputFilename = $input;
+        
+        $config = $this->configurate($inputFilename);
+        $written = @file_put_contents($outputFilename, $config);
         if (!$written) {
             throw new \Exception("Failed to write config to file `$this->outputFilename`");
         }
     }
 
     
-    public function writeEnvironmentFile()
+    public function writeEnvironmentFile($input, $output, $namespace = false)
     {
-        $output = $this->genEnvironmentFile();
-        $written = @file_put_contents($this->outputFilename, $output);
+        $inputFilename = $input;
+        $outputFilename = $output;
+        
+        $output = $this->genEnvironmentFile($inputFilename, $namespace);
+        $written = @file_put_contents($outputFilename, $output);
         if (!$written) {
             throw new \Exception("Failed to write config to file `$this->outputFilename`");
         }
@@ -133,6 +135,16 @@ class Configurator
      */
     public function addPHPConfig($filename)
     {
+        $filename = trim($filename);
+        
+        if (strlen($filename) == 0) {
+            throw new ConfiguratorException("Zero length filename is bogus.");
+        }
+        
+        if (file_exists($filename) == false) {
+            throw new ConfiguratorException("File `$filename` does not exist.");
+        }
+        
         ob_start();
         require($filename);
         $contents = ob_get_contents();
@@ -162,7 +174,7 @@ class Configurator
         }
 
         if (isset($evaluate) == true) {
-            $calculatedValues = $evaluate($this->getConfig());
+            $calculatedValues = $evaluate($this->getConfig(), $environment);
             $this->addConfigOverride($calculatedValues);
         }
     }
@@ -178,7 +190,7 @@ class Configurator
      */
     public function addConstant($constantName) {
         if (defined($constantName) == false) {
-            throw new \ConfiguratorException("Constant [$constantName] is not available, cannot configurate.");
+            throw new ConfiguratorException("Constant [$constantName] is not available, cannot configurate.");
         }
 
         $this->config[$constantName] = constant($constantName);
@@ -200,10 +212,15 @@ class Configurator
      * @param $inputFilename
      * @return mixed
      */
-    public function configurate($inputFilename) {        
+    public function configurate($inputFilename) {
         $config = $this->getConfig();
         
         foreach($config as $key => $value) {
+            if ($value === false) {
+                $$key = 'false';
+                continue;
+            }
+            
             $$key = $value;
         }
 
@@ -213,18 +230,26 @@ class Configurator
     }
     
     
-    public function genEnvironmentFile()
+    private function genEnvironmentFile($input, $namespace)
     { 
         $config = $this->getConfig();
         
-        $envRequired = require $this->inputFilename;
+        $inputFilename = $input;
+        
+        $envRequired = require $inputFilename;
         
         if (is_array($envRequired) == false) {
-            throw new ConfiguratorException("Failed to get array from ".$this->inputFilename);
+            throw new ConfiguratorException("Failed to get array from ".$inputFilename);
         }
         
         $envOutput = "<?php\n";
         $envOutput .= "\n";
+        
+        if (strlen($namespace)) {
+            $envOutput .= "namespace $namespace;\n";
+            $envOutput .= "\n";
+        }
+        
         
         $envOutput .= "function getAppEnv() {\n";
         $envOutput .= "    static \$env = [\n"; 
@@ -233,11 +258,13 @@ class Configurator
             if (array_key_exists($env, $config) == false) {
                 throw new ConfiguratorException("App needs $env but not found in config");
             }
+            $value = $config[$env];
+            $valueText = var_export($value, true);
 
             $envOutput .= sprintf(
-                "        '%s' => '%s',\n",
+                "        '%s' => %s,\n",
                 $env,
-                $config[$env]
+                $valueText
             );
         }
         $envOutput .= "    ];\n";

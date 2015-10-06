@@ -9,6 +9,32 @@ use Danack\Console\Command\Command;
 use Danack\Console\Input\InputArgument;
 use Auryn\Injector;
 
+
+/**
+ *
+ */
+function errorHandler($errno, $errstr, $errfile, $errline)
+{
+    if (error_reporting() == 0) {
+        return true;
+    }
+    if ($errno == E_DEPRECATED) {
+        return true; //Don't care - deprecated warnings are generally not useful
+    }
+    
+    if ($errno == E_CORE_ERROR || $errno == E_ERROR) {
+        //$message = "Fatal error: [$errno] $errstr on line $errline in file $errfile <br />\n";
+        return false;
+    }
+
+    $message = "Error: [$errno] $errstr in file $errfile on line $errline<br />\n";
+    throw new \Exception($message);
+}
+
+set_error_handler('Configurator\errorHandler');
+
+
+
 class CliRunner
 {
     const GENENV = 'genenv';
@@ -178,9 +204,9 @@ class CliRunner
         
             $questionHelper = new QuestionHelper();
             $questionHelper->setHelperSet($this->console->getHelperSet());
-            //$input = $parsedCommand->getInput();
-        
-            $injector = createInjector();
+
+            // We currently have no config, so fine to create this directly.
+            $injector = new Injector; 
 
             foreach ($parsedCommand->getParams() as $key => $value) {
                 $injector->defineParam($key, $value);
@@ -188,9 +214,9 @@ class CliRunner
             
             $injector->execute($parsedCommand->getCallable());
         }
-        catch (ConfiguratorException $sce) {
+        catch (ConfiguratorException $ce) {
             echo "Error running task: \n";
-            echo $sce->getMessage();
+            echo $ce->getMessage();
             exit(-1);
         }
         catch (\Exception $e) {
@@ -229,23 +255,4 @@ function convertToFPM($inputFilename, $outputFilename) {
     }
 
     fclose($fileHandle);
-}
-
-/**
- * @return Injector
- */
-function createInjector() {
-    $injector = new Injector();
-
-    return $injector;
-}
-
-
-function formatKeyNames($params) {
-    $newParams = [];
-    foreach ($params as $key => $value) {
-        $newParams[':'.$key] = $value;
-    }
-
-    return $newParams;
 }

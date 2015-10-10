@@ -8,7 +8,7 @@ use Danack\Console\Helper\QuestionHelper;
 use Danack\Console\Command\Command;
 use Danack\Console\Input\InputArgument;
 use Auryn\Injector;
-
+use Configurator\ConfiguratorException;
 
 /**
  *
@@ -185,6 +185,10 @@ class CliRunner
         //Figure out what Command was requested.
         try {
             $parsedCommand = $this->console->parseCommandLine();
+        }
+        catch(ConfiguratorException $ce) {
+            echo "Problem running configuration: ".$ce->getMessage();
+            exit(-1);
         }
         catch(\Exception $e) {
             //@TODO change to just catch parseException when that's implemented 

@@ -174,7 +174,7 @@ class Configurator
         }
 
         if (isset($evaluate) == true) {
-            $calculatedValues = $evaluate($this->getConfig(), $environment);
+            $calculatedValues = $evaluate($this->getConfig(), $this->environment);
             $this->addConfigOverride($calculatedValues);
         }
     }

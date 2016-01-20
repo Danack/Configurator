@@ -3,3 +3,6 @@ example/output
 example/env.php
 example/example.nginx.conf
 example/example.php-fpm.conf
+autogen
+test/fixtures/output/site.generated.ini
+test/fixtures/output/site.ini

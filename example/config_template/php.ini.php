@@ -1,5 +1,8 @@
+<?php
 
-extension=imagick.so
+$config = <<< END
+
+; extension=imagick.so
 default_charset = "utf-8";
 
 post_max_size = 10M
@@ -14,3 +17,9 @@ output_buffering = Off
 
 cgi.fix_pathinfo = 0
 apc.shm_size="64M"
+
+END;
+
+
+
+return $config;

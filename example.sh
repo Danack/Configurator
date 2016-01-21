@@ -17,6 +17,8 @@ fi
 mkdir -p autogen
 
 
+
+#Generate config templates for the set environment
 bin/configurate -p example/config.php example/config_template/nginx.conf.php autogen/nginx.conf $environment
 bin/configurate -p example/config.php example/config_template/php-fpm.conf.php autogen/php-fpm.conf $environment
 bin/configurate -p example/config.php example/config_template/php.ini.php autogen/php.ini $environment

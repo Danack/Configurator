@@ -5,11 +5,37 @@ A few simple tools to manage configuration data sanely. These tools are to hold 
 
 * Config file generator
 
-* Environment settings
+* Environment settings generator
 
 * Convert PHP ini files to PHP-FPM format
 
-## Config file generator
+Philosophy
+----------
+
+Environment variables need to be granular controls. Although they can be grouped together as "environments", they need to be configurable on a per-deploy basis without duplicating large blocks of information. 
+ 
+They also need to be stored stored alongside the applications code so that they can be maintained easily. 
+
+This library allows you to do these two thing. All environment settings can be stored in a simple way, and then extracted and combined with arbitrary combinations. e.g. using 'centos,dev' as the environment setting uses all the 'centos' environment settings, with the 'dev' settings over-riding any duplicate settings.
+
+
+Example usage for people who don't like reading instructions
+------------------------------------------------------------
+
+```
+#Generate nginx config file for the centos,dev environment
+bin/configurate -p example/config.php example/config_template/nginx.conf.php autogen/nginx.conf "centos,dev"
+
+# Generate a PHP file that contains a function that return the current application env settings
+bin/genenv -p example/config.php example/envRequired.php autogen/appEnv.php "centos,dev"
+
+# Convert a PHP ini file to be in the PHP-FPM format
+bin/fpmconv autogen/php.ini autogen/php.fpm.ini
+```
+
+
+Config file generator
+---------------------
 
 This tool allows you to generate config files from PHP based templates and PHP data files that hold all of the setting for the different environments
 
@@ -48,13 +74,13 @@ $windows = [
     'project.root.directory' => 'c:/documents/project',
 ];
 
-$dave = [
+$john = [
     'project.root.directory' => '/home/workdir/project',
 ]
 
 ```
 
-Running the command `configurate data/nginx.conf.php var/generated/nginx.conf centos,dave -p settings.php` would generated the file:  
+Running the command `configurate data/nginx.conf.php var/generated/nginx.conf centos,john -p settings.php` would generated the file:  
 
 
 ```
@@ -76,7 +102,8 @@ environment - a comma separated list of environment settings to apply.
 
 
 
-## Generate environment settings
+Generate environment settings
+-----------------------------
 
 A tool that will parse the environment settings required by an application, and the data files that hold the settings for all environments, and will generated a file that contains a function that returns an array of what env settings are required by this application
 
@@ -147,7 +174,8 @@ input - the input template file.
 output - the output file to write.  
 environment - a comma separated list of environment settings to apply.  
 
-## Convert PHP ini files to PHP-FPM format
+Convert PHP ini files to PHP-FPM format
+---------------------------------------
 
 Because of reasons, PHP-FPM doesn't use the standard PHP in file format when including ini files in a pool in the PHP-FPM conf file. This aspect of the Configurator converts PHP style ini files to the format PHP-FPM expects:
 

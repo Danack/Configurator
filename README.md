@@ -22,16 +22,20 @@ This library allows you to do these two thing. All environment settings can be s
 Example usage for people who don't like reading instructions
 ------------------------------------------------------------
 
+If you install Configurator through Composer, the executable files will be in the vendor bin directory and can be run with:
+
 ```
 #Generate nginx config file for the centos,dev environment
-bin/configurate -p example/config.php example/config_template/nginx.conf.php autogen/nginx.conf "centos,dev"
+vendor/bin/configurate -p example/config.php example/config_template/nginx.conf.php autogen/nginx.conf "centos,dev"
 
 # Generate a PHP file that contains a function that return the current application env settings
-bin/genenv -p example/config.php example/envRequired.php autogen/appEnv.php "centos,dev"
+vendor/bin/genenv -p example/config.php example/envRequired.php autogen/appEnv.php "centos,dev"
 
 # Convert a PHP ini file to be in the PHP-FPM format
-bin/fpmconv autogen/php.ini autogen/php.fpm.ini
+vendor/bin/fpmconv autogen/php.ini autogen/php.fpm.ini
 ```
+
+
 
 
 Config file generator

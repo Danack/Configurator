@@ -7,30 +7,26 @@ use Symfony\Component\Yaml\Yaml;
 
 class Configurator
 {
-    private $config = array();
-    private $configDefault = array();
-    private $configEnvironment = array();
-    private $configOverride = array();
-    
-    /**
-     * @var
+    /** @var string The comma separated list of environments that
+     * the config should be generated for.
      */
-    private $inputFilename;
-
-    /**
-     * @var
-     */
-    private $outputFilename;
-
     private $environment;
     
     /**
-     * @var
+     * @var string[] The individual environment components.
      */
     private $environmentList;
 
+    /** @var ConfiguratorData  */
+    private $configuratorData;
+    
+    /** @var string[] The original arguments passed to the converter */
+    private $originalArgs;
+
     /**
+     * @param Writer $writer
      * @param $environment
+     * @param array $originalArgs
      * @param string $jssettings
      * @param string $phpsettings
      * @param string $yamlsettings
@@ -39,7 +35,7 @@ class Configurator
     public function __construct(
         Writer $writer,
         $environment,
-        $originalArgs,
+        array $originalArgs,
         $jssettings = '',
         $phpsettings = '',
         $yamlsettings = ''
@@ -53,7 +49,9 @@ class Configurator
         $this->writer = $writer;
         $this->environment = $environment;
         $this->originalArgs = $originalArgs;
+        
         $this->environmentList = explode(',', $environment);
+        $this->configuratorData = new ConfiguratorData($this->environmentList);
 
         $phpsettings = trim($phpsettings);
         if (strlen($phpsettings) > 0) {
@@ -108,7 +106,6 @@ class Configurator
         $output = $this->genEnvironmentFile($inputFilename, $namespace);
         $this->writer->writeFile($outputFilename, $output);
     }
-    
 
     /**
      * @param $environment
@@ -122,40 +119,14 @@ class Configurator
         }
 
         $data = json_decode($contents, true);
-        
+
         if ($data === false) {
             throw new ConfiguratorException("Could not json_decode file $filename.");
         }
-
-        if (array_key_exists('default', $data) === true) {
-            $this->addConfigDefault($data['default']);
-        }
         
-        foreach ($this->environmentList as $environment) {
-            if (array_key_exists($environment, $data) === true) {
-                $this->addConfigEnvironment($data[$environment]);
-            }
-        }
-
-        if (array_key_exists('override', $data) === true) {
-            $this->addConfigOverride($data['override']);
-        }
+        $this->configuratorData->addData($data);
     }
 
-    private function addConfigDefault($data)
-    {
-        $this->configDefault = array_merge($this->configDefault, $data);
-    }
-
-    private function addConfigEnvironment($data)
-    {
-        $this->configEnvironment = array_merge($this->configEnvironment, $data);
-    }
-
-    private function addConfigOverride($data)
-    {
-        $this->configOverride = array_merge($this->configOverride, $data);
-    }
 
     /**
      * @param $filename
@@ -170,19 +141,7 @@ class Configurator
 
         $data = Yaml::parse($contents, true);
         
-        if (array_key_exists('default', $data) === true) {
-            $this->addConfigDefault($data['default']);
-        }
-        
-        foreach ($this->environmentList as $environment) {
-            if (array_key_exists($environment, $data) === true) {
-                $this->addConfigEnvironment($data[$environment]);
-            }
-        }
-
-        if (array_key_exists('override', $data) === true) {
-            $this->addConfigOverride($data['override']);
-        }
+        $this->configuratorData->addData($data);
     }
     
     /**
@@ -218,22 +177,22 @@ class Configurator
         }
 
         if (isset($default) === true) {
-            $this->addConfigDefault($default);
+            $this->configuratorData->addConfigDefault($default);
         }
 
         foreach ($this->environmentList as $environment) {
             if (isset($$environment) === true) {
-                $this->addConfigEnvironment($$environment);
+                $this->configuratorData->addConfigEnvironment($$environment);
             }
         }
 
         if (isset($override) === true) {
-            $this->addConfigOverride($override);
+            $this->configuratorData->addConfigOverride($override);
         }
 
         if (isset($evaluate) === true) {
-            $calculatedValues = $evaluate($this->getConfig(), $this->environment);
-            $this->addConfigOverride($calculatedValues);
+            $calculatedValues = $evaluate($this->configuratorData->getConfig(), $this->environment);
+            $this->configuratorData->addConfigOverride($calculatedValues);
         }
     }
     
@@ -248,11 +207,7 @@ class Configurator
      */
     public function addConstant($constantName)
     {
-        if (defined($constantName) === false) {
-            throw new ConfiguratorException("Constant [$constantName] is not available, cannot configurate.");
-        }
-
-        $this->config[$constantName] = constant($constantName);
+        $this->configuratorData->addConstant($constantName);
     }
 
     /**
@@ -262,7 +217,7 @@ class Configurator
      */
     public function addConfigValue($name, $value)
     {
-        $this->config[$name] = $value;
+        $this->configuratorData->addConfigValue($name, $value);
     }
 
     /**
@@ -274,7 +229,7 @@ class Configurator
      */
     public function configurate($inputFilename)
     {
-        $config = $this->getConfig();
+        $config = $this->configuratorData->getConfig();
         
         foreach ($config as $key => $value) {
             if ($value === false) {
@@ -298,7 +253,7 @@ class Configurator
      */
     private function genEnvironmentFile($input, $namespace)
     {
-        $config = $this->getConfig();
+        $config = $this->configuratorData->getConfig();
         
         $inputFilename = $input;
         
@@ -309,6 +264,15 @@ class Configurator
         }
         
         $envOutput = "<?php\n";
+        $envOutput .= "\n";
+
+        
+        $envOutput .= "// This file was automatically generated with the command line:\n";
+        $envOutput .= sprintf(
+            "// %s \n",
+            str_replace('?>', '', implode(' ', $this->originalArgs))
+        );
+
         $envOutput .= "\n";
         
         if (strlen($namespace) !== 0) {
@@ -338,18 +302,5 @@ class Configurator
         $envOutput .= "}\n";
 
         return $envOutput;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfig()
-    {
-        $config = $this->config;
-        $config = array_merge($config, $this->configDefault);
-        $config = array_merge($config, $this->configEnvironment);
-        $config = array_merge($config, $this->configOverride);
-        
-        return $config;
     }
 }

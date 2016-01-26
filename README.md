@@ -98,8 +98,9 @@ Running the command `configurate data/nginx.conf.php var/generated/nginx.conf ce
 
 `configurate [-p|--phpsettings="..."] [-j|--jssettings="..."] input output environment`
 
--p - a comma separated list of PHP data files. Each need to return an array of data.  
--j - a comma separated list of JSON data files.  
+-p - a comma separated list of PHP data files. Each need to return an array of data.
+-j - a comma separated list of JSON data files.
+-y - a comma separated list of YAML files.
 input - the input template file.  
 output - the output file to write.  
 environment - a comma separated list of environment settings to apply.  
@@ -173,7 +174,8 @@ The keys are the actual strings, rather than the constants used in the applicati
 `genenv [-p|--phpsettings="..."] [-j|--jssettings="..."] input output environment`
 
 -p - a comma separated list of PHP data files. Each need to return an array of data.  
--j - a comma separated list of JSON data files.  
+-j - a comma separated list of JSON data files.
+-y - a comma separated list of YAML files.
 input - the input template file.  
 output - the output file to write.  
 environment - a comma separated list of environment settings to apply.  

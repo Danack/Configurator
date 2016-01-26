@@ -9,7 +9,6 @@ use org\bovigo\vfs\vfsStream;
 
 class ConvertTest extends BaseTestCase
 {
-
     /**
      * @group yaml
      */
@@ -21,7 +20,7 @@ class ConvertTest extends BaseTestCase
         $configurator = new Configurator(
             $writer,
             'amazonec2',
-            'phpunit',
+            ['phpunit'],
             '',
             '',
             'test/fixtures/data/config.yaml'
@@ -68,6 +67,26 @@ class ConvertTest extends BaseTestCase
         $this->assertContains('memory_limit=256M', $contents);
     }
 
+    
+    public function testGenEnvCli()
+    {
+        $outputFilename = "test/fixtures/output/env.php";
+        $command = "genenv -p test/fixtures/data/config.php --namespace FooBar test/fixtures/input/envRequired.php $outputFilename amazonec2";
+
+        $this->runCommand($command);
+        $contents = file_get_contents($outputFilename);
+
+        $contents = substr($contents, strlen("<?php"));
+        eval($contents);
+        
+        $this->assertTrue(function_exists('FooBar\getAppEnv'), 'Failed to import function.');
+        $env = \FooBar\getAppEnv();
+        $this->assertArrayHasKey('cache_setting', $env);
+        $this->assertEquals('cache_time', $env['cache_setting']);
+    }
+    
+    
+    
     public function testConvertIniToFPM()
     {
         $command = "fpmconv test/fixtures/input/site.ini test/fixtures/output/site.phpfpm.ini";
@@ -93,8 +112,8 @@ class ConvertTest extends BaseTestCase
         $writer = new TestWriter();
         $configurator = new Configurator(
             $writer,
-            'phpunit',
             'amazonec2',
+            ['phpunit'],
             'test/fixtures/data/empty.json',
             'test/fixtures/data/config.php'
         );
@@ -106,8 +125,8 @@ class ConvertTest extends BaseTestCase
         $writer = new TestWriter();
         $configurator = new Configurator(
             $writer,
-            'phpunit',
             'amazonec2',
+            ['phpunit'],
             'test/fixtures/data/empty.json,test/fixtures/data/memory256.json',
             'test/fixtures/data/config.php'
         );
@@ -122,8 +141,8 @@ class ConvertTest extends BaseTestCase
         $writer = new TestWriter();
         $configurator = new Configurator(
             $writer,
-            'phpunit',
             'amazonec2',
+            ['phpunit'],
             'test/fixtures/data/empty.json',
             'test/fixtures/data/config.php'
         );

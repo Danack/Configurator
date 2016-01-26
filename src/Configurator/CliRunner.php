@@ -187,6 +187,13 @@ class CliRunner
             'A comma separated list of JSON setting files.'
         );
         
+        $configurateCommand->addOption(
+            'namespace',
+            'ns',
+            InputArgument::OPTIONAL,
+            'An optional namespace for the env function.'
+        );
+
         return $configurateCommand;
     }
 

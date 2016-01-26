@@ -42,5 +42,3 @@ include=${'phpfpm.conf.directory'}/*.conf
 END;
 
 return $config;
-
-?>

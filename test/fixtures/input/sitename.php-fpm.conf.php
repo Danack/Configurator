@@ -130,5 +130,3 @@ security.limit_extensions = .php
 END;
 
 return $config;
-
-?>

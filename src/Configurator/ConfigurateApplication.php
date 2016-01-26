@@ -1,18 +1,16 @@
 <?php
 
-
 namespace Configurator;
 
 use Danack\Console\Application as ConsoleApplication;
 use Danack\Console\Input\InputInterface;
 
-
-
-class ConfigurateApplication extends ConsoleApplication {
-
+class ConfigurateApplication extends ConsoleApplication
+{
     private $defaultCommand;
 
-    public function __construct($defaultCommand, $name = 'UNKNOWN', $version = 'UNKNOWN') {
+    public function __construct($defaultCommand, $name = 'UNKNOWN', $version = 'UNKNOWN')
+    {
         $this->defaultCommand = $defaultCommand;
         parent::__construct($name, $version);
     }
@@ -22,7 +20,8 @@ class ConfigurateApplication extends ConsoleApplication {
      * @param InputInterface $input
      * @return string
      */
-    protected function getCommandName(InputInterface $input) {
+    protected function getCommandName(InputInterface $input)
+    {
         // This should return the name of your command.
         return $this->defaultCommand;
     }
@@ -32,7 +31,8 @@ class ConfigurateApplication extends ConsoleApplication {
      *
      * @return array An array of default Command instances
      */
-    protected function getDefaultCommands() {
+    protected function getDefaultCommands()
+    {
         $defaultCommands = parent::getDefaultCommands();
 
         return $defaultCommands;
@@ -42,7 +42,8 @@ class ConfigurateApplication extends ConsoleApplication {
      * Overridden so that the application doesn't expect the command
      * name to be the first argument.
      */
-    public function getDefinition() {
+    public function getDefinition()
+    {
         $inputDefinition = parent::getDefinition();
         // clear out the normal first argument, which is the command name
         $inputDefinition->setArguments();
@@ -50,4 +51,3 @@ class ConfigurateApplication extends ConsoleApplication {
         return $inputDefinition;
     }
 }
-

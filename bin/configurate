@@ -25,5 +25,5 @@ if (!defined('COMPOSER_AUTOLOAD_LOCATION')) {
 
 require_once(COMPOSER_AUTOLOAD_LOCATION);
 
-$runner = new CliRunner(CliRunner::CONFIGURATE);
+$runner = new CliRunner(CliRunner::CONFIGURATE, $argv);
 $runner->execute();

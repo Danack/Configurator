@@ -1,6 +1,6 @@
 {
     "name": "intahwebz/configurator",
-    "description": "Generates config files from PHP based config files and PHP and JSON data files.",
+    "description": "Generates config files from PHP, JSON and Yaml data files.",
     "keywords": ["php", "config", "environment", "configuration", "tool", "UTF-8"],
     "license": "MIT",
     "autoload": {
@@ -17,8 +17,10 @@
         "bin/fpmconv"
     ],
     "require-dev": {
+        "mikey179/vfsStream": "^1.4.0",
         "phpunit/phpunit": "4.4.5",
-        "mikey179/vfsStream": "^1.4.0"
+        "squizlabs/php_codesniffer": "^2.0.0",
+        "symfony/yaml": "^2.8.2"
     },
     "require": {
         "rdlowrey/auryn": "^1.0.2",

@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Configurator;
 
-
-class ConfiguratorException extends \Exception {}
-
+class ConfiguratorException extends \Exception
+{
+    
+}

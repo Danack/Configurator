@@ -4,20 +4,22 @@ namespace Configurator\TestBase;
 
 /**
  * Class TestBase
- * 
+ *
  * Allows checking that no code has output characters, or left the output buffer in a bad state.
  *
  */
-class BaseTestCase extends \PHPUnit_Framework_TestCase {
-
+class BaseTestCase extends \PHPUnit_Framework_TestCase
+{
     private $startLevel = null;
 
-    function setup() {
+    public function setup()
+    {
         $this->startLevel = ob_get_level();
         ob_start();
     }
 
-    function teardown() {
+    public function teardown()
+    {
         if ($this->startLevel === null) {
             $this->assertEquals(0, 1, "startLevel was not set, cannot complete teardown");
         }
@@ -34,11 +36,10 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase {
     }
 
 
-    public function testPHPUnitApparentlyGetsConfused() {
+    public function testPHPUnitApparentlyGetsConfused()
+    {
         //Basically despite having:
         //<exclude>*/BaseTestCase.php</exclude>
         //in the phpunit.xml file it still thinks this file is a test class.
     }
 }
-
- 

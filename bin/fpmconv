@@ -25,5 +25,5 @@ if (!defined('COMPOSER_AUTOLOAD_LOCATION')) {
 
 require_once(COMPOSER_AUTOLOAD_LOCATION);
 
-$runner = new CliRunner(CliRunner::FPMCONV);
+$runner = new CliRunner(CliRunner::FPMCONV, $argv);
 $runner->execute();

@@ -108,11 +108,11 @@ $macports = array(
 
 
 $evaluate = function ($config, $environment) {
-    if (array_key_exists('app_name', $config) == false) {
+    if (array_key_exists('app_name', $config) === false) {
         throw new ConfiguratorException("app.name isn't set for environment '$environment'.");
     }
 
     return [
         'app_name_uppercase' => strtoupper($config['app_name'])
-    ]; 
+    ];
 };

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<ruleset name="Danack">
+    <description>Customised coding standard.</description>
+    <arg name="tab-width" value="4"/>
+    
+    <!-- <exclude-pattern>*Intahwebz*</exclude-pattern> -->
+    
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+           <property name="ignoreIndentationTokens" type="array" value="T_GOTO_LABEL"/>
+        </properties>
+    </rule>
+
+    <!-- The use of === true is enforced over implicit true statements, -->
+    <rule ref="Squiz.Operators.ComparisonOperatorUsage"/>
+    <!-- Checks to ensure that the logical operators 'and' and 'or' are not used.
+         Use the && and || operators instead. --> 
+    <rule ref="Squiz.Operators.ValidLogicalOperators"/>
+
+    <rule ref="PSR2">
+
+        <property 
+            name="ignoreIndentationTokens" type="array" 
+            value="T_COMMENT,T_DOC_COMMENT_OPEN_TAG,T_GOTO_LABEL"
+        />
+
+        <!-- Bug is CSS - see https://github.com/squizlabs/PHP_CodeSniffer/issues/604 -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceIndent"/>
+
+        <!-- I just don't agree with these. -->
+        <exclude name="PSR2.ControlStructures.ElseIfDeclaration"/>
+        <exclude name="Squiz.ControlStructures.ElseIfDeclaration"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace"/>
+
+        
+        <!-- This doen't understand that 'function' is used to define closures-->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.SpaceAfterFunction"/>
+
+        <!-- TODO make this be newline -->
+        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
+        
+        <!-- This makes co-ordinate pairs hard to read -->
+        <exclude name="PSR2.Methods.FunctionCallSignature.MultipleArguments" />
+        
+        <!-- These sniffs break 'valid' code -->
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase"/>
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenerdefault"/>
+    </rule>
+    
+        <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="ignoreIndentationTokens" type="array" value="T_COMMENT,T_DOC_COMMENT_OPEN_TAG,T_GOTO_LABEL"/>
+         </properties>
+    </rule>
+
+    <!-- Sometimes this is fine. -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>*CliRunner.php</exclude-pattern>
+    </rule>
+    
+    <!--
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>*src/Tier/Throwable.php</exclude-pattern>
+    </rule>
+    -->
+    
+    <rule ref="Generic.Files.LineLength.TooLong">
+        <exclude-pattern>*conf.php</exclude-pattern>
+        <exclude-pattern>*cnf.php</exclude-pattern>
+        <exclude-pattern>*Test.php</exclude-pattern>
+    </rule> 
+    
+    <!-- It's fine for test method names to have snake case -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>*Test*</exclude-pattern>
+    </rule>
+
+</ruleset>
+        

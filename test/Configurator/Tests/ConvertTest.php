@@ -1,22 +1,61 @@
 <?php
 
+namespace ConfiguratorTests;
+
 use Configurator\TestBase\BaseTestCase;
 use Configurator\Configurator;
+use Configurator\Writer\TestWriter;
 use org\bovigo\vfs\vfsStream;
 
+class ConvertTest extends BaseTestCase
+{
 
-class ConvertTest extends BaseTestCase {
+    /**
+     * @group yaml
+     */
+    public function testConfigYamlTemplateFile()
+    {
+        vfsStream::setup('exampleDir');
+        $writer = new TestWriter();
 
-    function testJsonSourceData()
+        $configurator = new Configurator(
+            $writer,
+            'amazonec2',
+            'phpunit',
+            '',
+            '',
+            'test/fixtures/data/config.yaml'
+        );
+        
+        $outputFilename = 'site.ini.php';
+
+        $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $outputFilename);
+        $contents = $writer->getDataForFile($outputFilename);
+        $this->assertContains('memory_limit=16M', $contents);
+    }
+    
+    
+    public function testJsonSourceData()
     {
         $pathToFixturesDir = realpath(dirname(__FILE__)."/../../fixtures");
 
-        
         $command = "configurate -j $pathToFixturesDir/data/config.json,$pathToFixturesDir/data/empty.json  $pathToFixturesDir/input/my.cnf.php $pathToFixturesDir/output/my.testfromjson.cnf amazonec2 ";
         $this->runCommand($command);
     }
     
-    function testMixedSourceData()
+    public function testYamlSourceData()
+    {
+        $pathToFixturesDir = realpath(dirname(__FILE__)."/../../fixtures");
+        $outputFilename = "$pathToFixturesDir/output/my.testfromyaml.cnf";
+        $command = "configurate -y $pathToFixturesDir/data/config.yaml $pathToFixturesDir/input/my.cnf.php $outputFilename amazonec2 ";
+        $this->runCommand($command);
+        
+        $contents = file_get_contents($outputFilename);
+        $this->assertContains('default-character-set=utf8mb4', $contents);
+    }
+
+    
+    public function testMixedSourceData()
     {
         $command = "configurate -p test/fixtures/data/config.php -j test/fixtures/data/empty.json test/fixtures/input/site.ini.php test/fixtures/output/site.generated.ini amazonec2";
         $this->runCommand($command);
@@ -29,7 +68,7 @@ class ConvertTest extends BaseTestCase {
         $this->assertContains('memory_limit=256M', $contents);
     }
 
-    function testConvertIniToFPM()
+    public function testConvertIniToFPM()
     {
         $command = "fpmconv test/fixtures/input/site.ini test/fixtures/output/site.phpfpm.ini";
         $this->runCommand($command);
@@ -37,7 +76,7 @@ class ConvertTest extends BaseTestCase {
         $this->assertArrayHasKey('php_admin_value', $result, "Failed to put values into 'php_admin_value' array.");
     }
     
-    function runCommand($command)
+    public function runCommand($command)
     {
         $returnValue = null;
         $output = [];
@@ -48,54 +87,58 @@ class ConvertTest extends BaseTestCase {
         $this->assertEquals(0, $returnValue, "Conversion returned non zero value, output was: ".$outputString);
     }
 
-    
-    function testConfigTemplateFile()
+    public function testConfigTemplateFile()
     {
-        vfsStream::setup('exampleDir');
-        $path = vfsStream::url("exampleDir/site.ini");
-
+        $path = "output/site.ini";
+        $writer = new TestWriter();
         $configurator = new Configurator(
+            $writer,
+            'phpunit',
             'amazonec2',
             'test/fixtures/data/empty.json',
             'test/fixtures/data/config.php'
         );
 
         $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $path);
-        $contents = file_get_contents($path);
+        $contents = $writer->getDataForFile($path);
         $this->assertContains('memory_limit=16M', $contents);
 
+        $writer = new TestWriter();
         $configurator = new Configurator(
+            $writer,
+            'phpunit',
             'amazonec2',
             'test/fixtures/data/empty.json,test/fixtures/data/memory256.json',
             'test/fixtures/data/config.php'
         );
                     
         $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $path);
-        
-        $contents = file_get_contents($path);
+        $contents = $writer->getDataForFile($path);
         $this->assertContains('memory_limit=256M', $contents);
-     }
-    
-    function testGenerateEnvFile()
-    {
-        vfsStream::setup('exampleDir');
-        $path = vfsStream::url("exampleDir/env.php");
+    }
 
+    public function testGenerateEnvFile()
+    {
+        $writer = new TestWriter();
         $configurator = new Configurator(
+            $writer,
+            'phpunit',
             'amazonec2',
             'test/fixtures/data/empty.json',
             'test/fixtures/data/config.php'
         );
         
         $namespace = "test12345";
+        
+        $outputFilename = 'test//env.php';
 
         $configurator->writeEnvironmentFile(
             'test/fixtures/input/envRequired.php',
-            $path,
+            $outputFilename,
             $namespace
         );
 
-        $contents = file_get_contents($path);
+        $contents = $writer->getDataForFile($outputFilename);
 
         if (strpos($contents, "<?php") !== 0) {
             $this->fail("Generated code does not start with '<?php'.\n");
@@ -105,7 +148,7 @@ class ConvertTest extends BaseTestCase {
         $contents = substr($contents, strlen("<?php"));
         eval($contents);
 
-        if (function_exists('test12345\getAppEnv') == false) {
+        if (function_exists('test12345\getAppEnv') === false) {
             $this->fail("Function test12345\\getAppEnv was not in generated code.\n");
             return;
         }

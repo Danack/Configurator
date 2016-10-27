@@ -14,38 +14,35 @@ Philosophy
 
 Environment variables need to be granular controls. Although they can be grouped together as "environments", they need to be configurable on a per-deploy basis without duplicating large blocks of information. 
  
-They also need to be stored stored alongside the applications code so that they can be maintained easily. 
+They also need to be stored alongside the application's code so that they can be maintained easily. 
 
-This library allows you to do these two thing. All environment settings can be stored in a simple way, and then extracted and combined with arbitrary combinations. e.g. using 'centos,dev' as the environment setting uses all the 'centos' environment settings, with the 'dev' settings over-riding any duplicate settings.
+This library allows you to do these two things. All environment settings can be stored in a simple way, and then extracted and combined with arbitrary combinations. E.g. using 'centos,dev' as the environment setting uses all the 'centos' environment settings, with the 'dev' settings over-riding any duplicate settings.
 
 
 Example usage for people who don't like reading instructions
 ------------------------------------------------------------
 
-If you install Configurator through Composer, the executable files will be in the vendor bin directory and can be run with:
+If you install Configurator through Composer, the executable files will be in the `vendor/bin` directory and can be run with:
 
-```
-#Generate nginx config file for the centos,dev environment
+```bash
+# Generate nginx config file for the centos,dev environment
 vendor/bin/configurate -p example/config.php example/config_template/nginx.conf.php autogen/nginx.conf "centos,dev"
 
-# Generate a PHP file that contains a function that return the current application env settings
+# Generate a PHP file that contains a function which returns the current application env settings
 vendor/bin/genenv -p example/config.php example/envRequired.php autogen/appEnv.php "centos,dev"
 
 # Convert a PHP ini file to be in the PHP-FPM format
 vendor/bin/fpmconv autogen/php.ini autogen/php.fpm.ini
 ```
 
-
-
-
 Config file generator
 ---------------------
 
-This tool allows you to generate config files from PHP based templates and PHP data files that hold all of the setting for the different environments
+This tool allows you to generate config files from PHP based templates and PHP data files that hold all of the settings for the different environments.
 
 Source config template file:
 
-```
+```php
 <?php
 
 $config = <<< END
@@ -65,7 +62,7 @@ return $config;
 
 Data file that holds data for arbitrary environments:
 
-```
+```php
 <?php
 
 $centos = [
@@ -84,7 +81,7 @@ $john = [
 
 ```
 
-Running the command `configurate data/nginx.conf.php var/generated/nginx.conf centos,john -p settings.php` would generated the file:  
+Running the command `configurate data/nginx.conf.php var/generated/nginx.conf centos,john -p settings.php` would generate the file:  
 
 
 ```
@@ -93,29 +90,27 @@ Running the command `configurate data/nginx.conf.php var/generated/nginx.conf ce
     root /home/workdir/project/public;
 ```
 
-
 ### Syntax
 
 `configurate [-p|--phpsettings="..."] [-j|--jssettings="..."] input output environment`
 
--p - a comma separated list of PHP data files. Each need to return an array of data.
--j - a comma separated list of JSON data files.
--y - a comma separated list of YAML files.
-input - the input template file.  
-output - the output file to write.  
-environment - a comma separated list of environment settings to apply.  
-
-
+|             |                                                                                 |
+|-------------|---------------------------------------------------------------------------------|
+| -p          | A comma separated list of PHP data files. Each need to return an array of data. |
+| -j          | A comma separated list of JSON data files.                                      |
+| -y          | A comma separated list of YAML files.                                           |
+| input       | The input template file.                                                        |
+| output      | The output file to write.                                                       |
+| environment | A comma separated list of environment settings to apply.                        |
 
 Generate environment settings
 -----------------------------
 
-A tool that will parse the environment settings required by an application, and the data files that hold the settings for all environments, and will generated a file that contains a function that returns an array of what env settings are required by this application
+A tool that will parse the environment settings required by an application and the data files that hold the settings for all environments, and generate a file that contains a function which returns an array of what env settings are required by this application.
 
+Given this file listing the environment settings required by an application:
 
-File listing the environment settings required by the application:
-
-```
+```php
 <?php
 
 use ExampleApp\AppConfig;
@@ -129,9 +124,9 @@ $env = [
 return $env;
 ```
 
-A data file that holds all the data for the various environment settings
+And a data file that holds all the data for the various environment settings:
 
-```
+```php
 $dev = [
     AppConfig::SCRIPT_PACKING => true,
     AppConfig::CACHING_SETTING => 'caching.disable',
@@ -142,43 +137,40 @@ $live = [
     AppConfig::CACHING_SETTING => 'caching.time'
 ]; 
 
-
 // Anyone doing UX testing needs to have the scripts packed together
 // to avoid slow UI responses
-$uxtesting[AppConfig::SCRIPT_PACKING] = true;
+$uxtesting = [AppConfig::SCRIPT_PACKING => true];
 ```
 
-Running the command `bin/genenv -p environment/config.php environment/envRequired.php env.php dev,uxtesting`
+Running the command `bin/genenv -p environment/config.php environment/envRequired.php env.php dev,uxtesting` produces a file containing a single function which contains all the requested env settings:
 
-Produces a file containing a single function that contains all the requested env settings.
-
-```
+```php
 <?php
 
 function getAppEnv() {
     static $env = [
-        'caching.setting' => 'caching.revalidate',
+        'caching.setting' => 'caching.disable',
         'script.packing' => 'true',
     ];
 
     return $env;
 }
-
 ```
 
-The keys are the actual strings, rather than the constants used in the application, to allow the settings to be used outside of the application. 
-
+The keys are actual strings rather than the constants used in the application to allow the settings to be used outside of the application. 
 
 ### Syntax
 
 `genenv [-p|--phpsettings="..."] [-j|--jssettings="..."] input output environment`
 
--p - a comma separated list of PHP data files. Each need to return an array of data.  
--j - a comma separated list of JSON data files.
--y - a comma separated list of YAML files.
-input - the input template file.  
-output - the output file to write.  
-environment - a comma separated list of environment settings to apply.  
+|             |                                                                                 |
+|-------------|---------------------------------------------------------------------------------|
+| -p          | A comma separated list of PHP data files. Each need to return an array of data. |
+| -j          | A comma separated list of JSON data files.                                      |
+| -y          | A comma separated list of YAML files.                                           |
+| input       | The input template file.                                                        |
+| output      | The output file to write.                                                       |
+| environment | A comma separated list of environment settings to apply.                        |  
 
 Convert PHP ini files to PHP-FPM format
 ---------------------------------------
@@ -195,7 +187,7 @@ post_max_size = 10M
 
 Running the command `php bin/fpmconv example.php.ini example.phpfpm.ini`
 
-will generate this PHP-FPM ini file
+will generate this PHP-FPM ini file:
 
 ```
 php_admin_value[extension] = "imagick.so"

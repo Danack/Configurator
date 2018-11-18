@@ -25,7 +25,7 @@
     "require": {
         "rdlowrey/auryn": "^1.0.2",
         "danack/console": "^2.6.1",
-        "php": "^5.4 || ^7.0"
+        "php": "^7.2"
     },
     "authors": [
         {

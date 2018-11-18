@@ -273,9 +273,7 @@ function convertToFPM($inputFilename, $outputFilename)
 
     foreach ($iniSettings as $key => $value) {
         if (is_bool($value) === true ||
-            $value === 0 ||
-            $value === 1) {
-
+            $value === 0 || $value === 1) {
             if ($value === false) {
                 $value = "0";
             }

@@ -194,7 +194,7 @@ class ConvertTest extends BaseTestCase
 
         $filepath = __DIR__ . '/../../fixtures/output/config_generated.php';
 
-        $configurator->writeStaticConfigFile(
+        $configurator->writeClassConfigFile(
             \ConfiguratorTest\ExampleConfig::class,
             $filepath
         );

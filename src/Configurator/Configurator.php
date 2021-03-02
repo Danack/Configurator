@@ -107,6 +107,90 @@ class Configurator
         $this->writer->writeFile($outputFilename, $output);
     }
 
+
+    public function writeClassConfigFile(
+        string $config_class,
+        string $output
+    ) {
+
+        $outputFilename = $output;
+
+        try {
+            $rc = new \ReflectionClass($config_class);
+        }
+        catch (\ReflectionException $reflectionException) {
+            throw new \Configurator\ConfiguratorException(
+                "Failed to get reflection for class " . $config_class
+            );
+        }
+
+        $config = $this->configuratorData->getConfig();
+
+        $configOutput = "<?php\n";
+        $configOutput .= "\n";
+
+
+        $configOutput .= "// This file was automatically generated with the command line:\n";
+        $configOutput .= sprintf(
+            "// %s \n",
+            str_replace('?>', '', implode(' ', $this->originalArgs))
+        );
+
+        $configOutput .= "function getGeneratedConfig(): array\n";
+        $configOutput .= "{\n";
+
+        $configOutput .= "    \$data = [\n";
+
+        foreach ($rc->getConstants() as $constant_name => $keystring) {
+            if (is_int($keystring) === false && is_string($keystring) === false) {
+                throw new ConfiguratorException("key string for setting $constant_name should be string.");
+            }
+
+            if (array_key_exists($keystring, $config) !== true) {
+                throw new ConfiguratorException("No config setting for $keystring.");
+            }
+
+            $value = $config[$keystring];
+
+            $value_string = $value;
+            if (is_bool($value) === true) {
+                if ($value) {
+                    $value_string = 'true';
+                }
+                else {
+                    $value_string = 'false';
+                }
+            }
+            else if (is_int($value)  === true) {
+                $value_string = $value;
+            }
+            else if (is_string($value_string) === true) {
+                $value_string = addslashes($value_string);
+                $value_string = '"' . $value_string . '"';
+            }
+            else {
+                $value_string = var_export($value_string, true);
+            }
+
+            $configOutput .= sprintf(
+                "        %s::%s => %s,\n",
+                $config_class,
+                $constant_name,
+                $value_string,
+            );
+        }
+
+        $configOutput .= "    ];\n";
+
+        $configOutput .= "    return \$data;\n";
+
+        $configOutput .= "}\n";
+        $configOutput .= "\n";
+
+        $this->writer->writeFile($outputFilename, $configOutput);
+    }
+
+
     /**
      * @param $environment
      * @param $filename

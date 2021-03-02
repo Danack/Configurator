@@ -5,7 +5,9 @@ namespace ConfiguratorTests;
 use Configurator\TestBase\BaseTestCase;
 use Configurator\Configurator;
 use Configurator\Writer\TestWriter;
+use Configurator\Writer\FileWriter;
 use org\bovigo\vfs\vfsStream;
+use ConfiguratorTest\ExampleConfig;
 
 class ConvertTest extends BaseTestCase
 {
@@ -175,5 +177,54 @@ class ConvertTest extends BaseTestCase
         $vars = \test12345\getAppEnv();
         $this->assertArrayHasKey('cache_setting', $vars);
         $this->assertEquals('cache_time', $vars['cache_setting']);
+    }
+
+
+    public function testConfigFromStaticFile()
+    {
+        $path = "output/site.ini";
+        $writer = new FileWriter();
+        $configurator = new Configurator(
+            $writer,
+            'local',
+            ['phpunit'],
+            'test/fixtures/app_data/empty.json',
+            'test/fixtures/app_data/config_input.php'
+        );
+
+        $filepath = __DIR__ . '/../../fixtures/output/config_generated.php';
+
+        $configurator->writeStaticConfigFile(
+            \ConfiguratorTest\ExampleConfig::class,
+            $filepath
+        );
+
+        require_once $filepath;
+        $data = getGeneratedConfig();
+        if (is_array($data) !== true) {
+            $this->fail("Generated data is not array");
+        }
+
+        $this->assertSame(
+            'local foo',
+            ExampleConfig::getConfig(ExampleConfig::FOO)
+        );
+
+        $this->assertSame(
+            'default bar',
+            ExampleConfig::getConfig(ExampleConfig::BAR)
+        );
+
+        $db_settings = [
+            'port' => 3306,
+            'host' => '127.0.0.1',
+            'auth' => false
+        ];
+
+        $this->assertSame(
+            $db_settings,
+            ExampleConfig::getConfig(ExampleConfig::DB)
+        );
+
     }
 }

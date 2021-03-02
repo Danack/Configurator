@@ -7,3 +7,5 @@ autogen
 test/fixtures/output/site.generated.ini
 test/fixtures/output/site.ini
 tmp
+test/fixtures/output/config_generated.php
+test/fixtures/output/env.php

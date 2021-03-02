@@ -39,7 +39,8 @@ class CliRunner
     const GENENV = 'genenv';
     const FPMCONV = 'fpmconv';
     const CONFIGURATE = 'configurate';
-    
+    const CLASSCONFIG = 'classconfig';
+
     private $defaultCommand;
 
     private $originalArgs;
@@ -52,7 +53,7 @@ class CliRunner
     public function __construct($defaultCommand, $originalArgs)
     {
         $this->originalArgs = $originalArgs;
-        
+
         if ($defaultCommand === CliRunner::FPMCONV) {
             $command = $this->makeFpmConvCommand();
         }
@@ -61,6 +62,9 @@ class CliRunner
         }
         else if ($defaultCommand === CliRunner::GENENV) {
             $command = $this->makeGenerateEnvCommand();
+        }
+        else if ($defaultCommand === CliRunner::CLASSCONFIG) {
+            $command = $this->makeClassConfigCommand();
         }
         else {
             throw new \Exception("Unknown command type");
@@ -145,6 +149,62 @@ class CliRunner
         
         return $configurateCommand;
     }
+
+
+
+    /**
+     * @return Command
+     */
+    public function makeClassConfigCommand()
+    {
+        $configurateCommand = new Command(
+            self::CLASSCONFIG,
+            ['Configurator\Configurator', 'writeClassConfigFile']
+        );
+        $configurateCommand->setDescription("Build the config, so that the values are stored from a class config naming scheme.");
+
+        $configurateCommand->addArgument(
+            'config_class',
+            InputArgument::REQUIRED,
+            'The FQCN of the config class that holds the names.'
+        );
+
+        $configurateCommand->addArgument(
+            'output',
+            InputArgument::REQUIRED,
+            'The output filename'
+        );
+
+        $configurateCommand->addArgument(
+            'environment',
+            InputArgument::REQUIRED,
+            'What environment to generated the config for.'
+        );
+
+        $configurateCommand->addOption(
+            'phpsettings',
+            'p',
+            InputArgument::OPTIONAL,
+            'A comma separated list of PHP setting files.'
+        );
+
+        $configurateCommand->addOption(
+            'jssettings',
+            'j',
+            InputArgument::OPTIONAL,
+            'A comma separated list of JSON setting files.'
+        );
+
+        $configurateCommand->addOption(
+            'yamlsettings',
+            'y',
+            InputArgument::OPTIONAL,
+            'A comma separated list of YAML setting files.'
+        );
+
+        return $configurateCommand;
+    }
+
 
     public function makeGenerateEnvCommand()
     {

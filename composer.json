@@ -12,6 +12,7 @@
         "psr-0": { "ExampleApp\\": "example/" }
     },
     "bin": [
+        "bin/classconfig",
         "bin/configurate",
         "bin/genenv",
         "bin/fpmconv"

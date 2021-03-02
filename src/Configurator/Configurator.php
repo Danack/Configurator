@@ -154,14 +154,14 @@ class Configurator
 
             $value_string = $value;
             if (is_bool($value) === true) {
-                if ($value) {
+                if ($value === true) {
                     $value_string = 'true';
                 }
                 else {
                     $value_string = 'false';
                 }
             }
-            else if (is_int($value)  === true) {
+            else if (is_int($value) === true) {
                 $value_string = $value;
             }
             else if (is_string($value_string) === true) {

@@ -161,7 +161,9 @@ class CliRunner
             self::CLASSCONFIG,
             ['Configurator\Configurator', 'writeClassConfigFile']
         );
-        $configurateCommand->setDescription("Build the config, so that the values are stored from a class config naming scheme.");
+        $configurateCommand->setDescription(
+            "Build the config, so that the values are stored from a class config naming scheme."
+        );
 
         $configurateCommand->addArgument(
             'config_class',

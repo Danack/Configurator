@@ -176,7 +176,7 @@ class Configurator
                 "        %s::%s => %s,\n",
                 $config_class,
                 $constant_name,
-                $value_string,
+                $value_string
             );
         }
 

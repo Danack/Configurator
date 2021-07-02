@@ -135,7 +135,7 @@ class ConvertTest extends BaseTestCase
                     
         $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $path);
         $contents = $writer->getDataForFile($path);
-        $this->assertContains('memory_limit=256M', $contents);
+        $this->assertStringContainsString('memory_limit=256M', $contents);
     }
 
     public function testGenerateEnvFile()

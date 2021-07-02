@@ -122,7 +122,7 @@ class ConvertTest extends BaseTestCase
 
         $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $path);
         $contents = $writer->getDataForFile($path);
-        $this->assertContains('memory_limit=16M', $contents);
+        $this->assertStringContainsString('memory_limit=16M', $contents);
 
         $writer = new TestWriter();
         $configurator = new Configurator(

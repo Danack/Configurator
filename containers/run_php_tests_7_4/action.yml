@@ -1,0 +1,6 @@
+name: 'test'
+description: 'Perform phpunit tests'
+author: 'David Stinemetze'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

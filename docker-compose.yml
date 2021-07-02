@@ -1,0 +1,12 @@
+version: "3"
+services:
+  developing:
+    build: containers/developing
+    volumes:
+      - .:/var/app
+  php_test:
+    build: containers/run_php_tests_8_0
+    volumes:
+      - .:/var/app
+
+

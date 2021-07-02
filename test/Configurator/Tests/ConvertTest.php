@@ -32,7 +32,7 @@ class ConvertTest extends BaseTestCase
 
         $configurator->writeConfigFile('test/fixtures/input/site.ini.php', $outputFilename);
         $contents = $writer->getDataForFile($outputFilename);
-        $this->assertContains('memory_limit=16M', $contents);
+        $this->assertStringContainsString('memory_limit=16M', $contents);
     }
     
     
@@ -52,7 +52,7 @@ class ConvertTest extends BaseTestCase
         $this->runCommand($command);
         
         $contents = file_get_contents($outputFilename);
-        $this->assertContains('default-character-set=utf8mb4', $contents);
+        $this->assertStringContainsString('default-character-set=utf8mb4', $contents);
     }
 
     
@@ -61,12 +61,12 @@ class ConvertTest extends BaseTestCase
         $command = "configurate -p test/fixtures/data/config.php -j test/fixtures/data/empty.json test/fixtures/input/site.ini.php test/fixtures/output/site.generated.ini amazonec2";
         $this->runCommand($command);
         $contents = file_get_contents('test/fixtures/output/site.generated.ini');
-        $this->assertContains('memory_limit=16M', $contents);
+        $this->assertStringContainsString('memory_limit=16M', $contents);
 
         $command = "configurate -p test/fixtures/data/config.php -j test/fixtures/data/empty.json,test/fixtures/data/memory256.json test/fixtures/input/site.ini.php  test/fixtures/output/site.generated.ini amazonec2";
         $this->runCommand($command);
         $contents = file_get_contents('test/fixtures/output/site.generated.ini');
-        $this->assertContains('memory_limit=256M', $contents);
+        $this->assertStringContainsString('memory_limit=256M', $contents);
     }
 
     

@@ -19,14 +19,14 @@
     ],
     "require-dev": {
         "mikey179/vfsstream": "^1.4.0",
-        "phpunit/phpunit": "7.4.4",
-        "squizlabs/php_codesniffer": "^2.0.0",
+        "phpunit/phpunit": "9.5.6",
+        "squizlabs/php_codesniffer": "^3.6.0",
         "symfony/yaml": "^2.8.2"
     },
     "require": {
         "rdlowrey/auryn": "^1.0.2",
         "danack/console": "^2.6.1",
-        "php": "^7.2"
+        "php": "^7.2 || ^8.0"
     },
     "authors": [
         {

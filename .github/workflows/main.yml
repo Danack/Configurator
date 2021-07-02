@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  release:
+    types: [created]
+
+jobs:
+  unit_tests_8_0:
+    name: Unit Tests 8.0
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Perform phpunit tests
+        uses: ./containers/run_php_tests_8_0
+  unit_tests_7_4:
+    name: Unit Tests 7.4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Perform phpunit tests
+        uses: ./containers/run_php_tests_7_4

@@ -12,5 +12,5 @@ php ./composer.phar install
 
 echo '---Running unit tests---'
 sh runUnitTests.sh
-sh runCodeSniffer.sh
+sh runCodeStyle.sh
 
